@@ -13,9 +13,9 @@ jobs:
       - name: Generate build ID
         id: prep
         run: |
-            branch=${GITHUB_REF##*/}
-            branch-v1=${GITHUB_REF#refs/heads/}
+            
+            branch=${GITHUB_REF#refs/heads/}
             sha=${GITHUB_SHA::8}
             ts=$(date +%s)
-            echo "::set-output name=BUILD_ID::${branch-v1}-${sha}-${ts}"   
+            echo "::set-output name=BUILD_ID::${branch}-${sha}-${ts}"   
 
