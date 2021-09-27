@@ -14,10 +14,8 @@ jobs:
         id: prep
         run: |
             branch=${GITHUB_REF##*/}
+            branch-v1=${GITHUB_REF#refs/heads/}
             sha=${GITHUB_SHA::8}
             ts=$(date +%s)
-            echo "::set-output name=BUILD_ID::${branch}-${sha}-${ts}"   
-      - name: setup env
-          # add more here
-        run: |
-          echo $branch
+            echo "::set-output name=BUILD_ID::${branch-v1}-${sha}-${ts}"   
+
