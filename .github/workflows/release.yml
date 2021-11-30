@@ -2,7 +2,7 @@ name: Build Release
 on:
   push:
     tags:        
-      - v1.*           # Push events to v1.0, v1.1, and v1.9 tags
+      - v1.*    # Push events to v1.0, v1.1, and v1.9 tags
 
 jobs:
   build:
@@ -20,4 +20,13 @@ jobs:
             sha=${GITHUB_SHA::8}
             ts=$(date +%s)
             echo "::set-output name=BUILD_ID::${branch}-${sha}-${ts}"   
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
+      - name: Check output
+        env:
+          RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ steps.vars.outputs.tag }}
