@@ -3,7 +3,8 @@ on:
   push:
     tags:        
       - v1.*    # Push events to v1.0, v1.1, and v1.9 tags
-
+env:
+  HELM_EXPERIMENTAL_OCI: 1
 jobs:
   build:
     name: Build
@@ -27,7 +28,7 @@ jobs:
 
             echo "CI_COMMIT_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
             echo $CI_COMMIT_TAG
-            echo export HELM_EXPERIMENTAL_OCI=1
+            echo export =1
             env
           
       - name: Set env
@@ -38,7 +39,7 @@ jobs:
         
       - name: Test
         run: |
-          echo HELM_EXPERIMENTAL_OCI=1
+          export HELM_EXPERIMENTAL_OCI=1
           echo $RELEASE_VERSION
           echo ${{ env.RELEASE_VERSION }}
           echo $CI_COMMIT_TAG
