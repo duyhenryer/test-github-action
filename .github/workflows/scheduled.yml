@@ -10,7 +10,6 @@ permissions:
   contents: read
   packages: write
   id-token: write
-  secrets: read 
 jobs:
   # Build binary job (chạy khi có lịch trình)
   build:
