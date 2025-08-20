@@ -1,0 +1,160 @@
+name: Scheduled Jobs Test
+run-name: Scheduled Job Test ${{ github.workflow }}
+
+on:
+  schedule:
+    # Test chạy mỗi 3 phút
+    - cron: '*/3 * * * *'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  # Build binary job (chạy khi có lịch trình)
+  build:
+    runs-on: ubuntu-latest
+    name: Build Binary
+    timeout-minutes: 10
+    if: github.event.schedule == '*/3 * * * *'
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            name=ghcr.io/${{ github.repository }}/backend
+          tags: |
+            type=sha,enable=true,suffix=,format=short
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+  # ===== SHOPIFY PARTNER SYNC JOBS TEST =====
+  sync-apps:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Sync Apps
+    timeout-minutes: 15
+    if: github.event.schedule == '*/3 * * * *'
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: Transtore
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+          - name: Gelacy
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+          - name: Convercy
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+          - name: Trustz
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+          - name: Amote
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+          - name: Vairo
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+          - name: Lavar
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: ''
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - name: Run ${{ matrix.app.name }} Sync
+        run: |
+          /root/main \
+            ${{ matrix.app.token }} \
+            gid://partners/App/${{ matrix.app.app_id }} \
+            ${{ matrix.app.partner_id }}
+
+  # ===== GMAIL WATCH JOBS TEST =====
+  watch-apps:
+    needs: build
+    runs-on: ubuntu-latest
+    name: Watch Apps
+    timeout-minutes: 10
+    if: github.event.schedule == '*/3 * * * *'
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: Transtore
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '6 0 * * *'
+          - name: Gelacy
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '0 0 * * *'
+          - name: Convercy
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '6 0 * * *'
+          - name: Trustz
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '0 0 * * *'
+          - name: Amote
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '0 0 * * *'
+          - name: Vairo
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '0 0 * * *'
+          - name: Lavar
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            app_id: '14548697089'
+            partner_id: '2663445'
+            cron: '0 0 * * *'
+    # Điều kiện if được bỏ đi, các job trong ma trận sẽ chạy khi job cha chạy
+    if: true
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - name: Run ${{ matrix.app.name }} Watch
+        run: |
+          /root/main \
+            ${{ matrix.app.token }} \
+            gid://partners/App/${{ matrix.app.app_id }} \
+            ${{ matrix.app.partner_id }}
+
+
+
+
