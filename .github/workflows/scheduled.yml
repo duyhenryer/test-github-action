@@ -1,5 +1,5 @@
 name: Scheduled Jobs Test
-run-name: Scheduled Job Test ${{ github.workflow }}
+run-name: XXX ${{ github.workflow }}
 
 on:
   schedule:
@@ -85,7 +85,8 @@ jobs:
             app_id: '14548697089'
             partner_id: '2663445'
             secret_name: 'LAVAR_PARTNER_TOKEN'
-
+    container:
+      image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         env:
