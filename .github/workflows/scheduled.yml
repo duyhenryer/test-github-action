@@ -89,14 +89,12 @@ jobs:
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         env:
-          APP_TOKEN: ${{ secrets[ matrix.app.secret_name ] }}
+          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
           /root/main \
             $APP_TOKEN \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
-
-
   # ===== GMAIL WATCH JOBS TEST =====
   watch-apps:
     needs: build
