@@ -78,21 +78,21 @@ jobs:
             partner_id: '2663445'
             secret_name: 'AMOTE_PARTNER_TOKEN'
           - name: Vairo
+            token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'VAIRO_PARTNER_TOKEN'
           - name: Lavar
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'LAVAR_PARTNER_TOKEN'
+            token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
 
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         env:
-          APP_TOKEN: ${{ secrets[ matrix.app.secret_name ] }}
+          APP_TOKEN: ${{ matrix.app.token }}
         run: |
           /root/main \
-            $APP_TOKEN \
+            ${{ matrix.app.token }} \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
 
