@@ -3,8 +3,8 @@ run-name: Scheduled Job Test ${{ github.workflow }}
 
 on:
   schedule:
-    # Test chạy mỗi 2 phút
-    - cron: '*/2 * * * *'
+    # Test chạy mỗi 3 phút
+    - cron: '*/3 * * * *'
 
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Binary
     timeout-minutes: 10
-    if: github.event.schedule == '*/2 * * * *'
+    if: github.event.schedule == '*/3 * * * *'
     outputs:
       image: ${{ steps.meta.outputs.tags }}
     steps:
@@ -53,8 +53,6 @@ jobs:
     name: Sync Apps
     timeout-minutes: 15
     if: github.event_name == 'schedule'
-    container:
-      image: ${{ needs.build.outputs.image }}
     strategy:
       fail-fast: false
       matrix:
@@ -103,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Watch Apps
     timeout-minutes: 10
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule'  # chỉ giữ 1 if
     strategy:
       fail-fast: false
       matrix:
