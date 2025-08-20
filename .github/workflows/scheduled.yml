@@ -53,6 +53,8 @@ jobs:
     name: Sync Apps
     timeout-minutes: 15
     if: github.event_name == 'schedule'
+    container:
+      image: ${{ needs.build.outputs.image }}
     strategy:
       fail-fast: false
       matrix:
@@ -78,32 +80,32 @@ jobs:
             partner_id: '2663445'
             secret_name: 'AMOTE_PARTNER_TOKEN'
           - name: Vairo
-            token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'VAIRO_PARTNER_TOKEN'
           - name: Lavar
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
+            secret_name: 'LAVAR_PARTNER_TOKEN'
 
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         env:
-          APP_TOKEN: ${{ matrix.app.token }}
+          APP_TOKEN: ${{ secrets[ matrix.app.secret_name ] }}
         run: |
           /root/main \
-            ${{ matrix.app.token }} \
+            $APP_TOKEN \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
-
-
   # ===== GMAIL WATCH JOBS TEST =====
   watch-apps:
     needs: build
     runs-on: ubuntu-latest
     name: Watch Apps
     timeout-minutes: 10
-    if: github.event_name == 'schedule'  # chỉ giữ 1 if
+    if: github.event_name == 'schedule'
+    container:
+      image: ${{ needs.build.outputs.image }}
     strategy:
       fail-fast: false
       matrix:
