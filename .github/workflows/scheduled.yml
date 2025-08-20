@@ -85,7 +85,8 @@ jobs:
             app_id: '14548697089'
             partner_id: '2663445'
             secret_name: 'LAVAR_PARTNER_TOKEN'
-
+    container:
+      image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         env:
@@ -95,7 +96,6 @@ jobs:
             $APP_TOKEN \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
-  # ===== GMAIL WATCH JOBS TEST =====
   watch-apps:
     needs: build
     runs-on: ubuntu-latest
