@@ -91,7 +91,7 @@ jobs:
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         env:
-          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
+          APP_TOKEN: ${{ secrets[ matrix.app.secret_name ] }}
         run: |
           /root/main \
             $APP_TOKEN \
@@ -105,7 +105,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Watch Apps
     timeout-minutes: 10
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule'  # chỉ giữ 1 if
     strategy:
       fail-fast: false
       matrix:
@@ -145,7 +145,6 @@ jobs:
             partner_id: '2663445'
             secret_name: 'LAVAR_PARTNER_TOKEN'
             cron: '0 0 * * *'
-    if: true
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
