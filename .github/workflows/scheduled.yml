@@ -4,7 +4,7 @@ run-name: Scheduled Job Test ${{ github.workflow }}
 on:
   schedule:
     # Test chạy mỗi 3 phút
-    - cron: '*/3 * * * *'
+    - cron: '* * * * *'
 
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Binary
     timeout-minutes: 10
-    if: github.event.schedule == '*/3 * * * *'
+    if: github.event.schedule == '* * * * *'
     outputs:
       image: ${{ steps.meta.outputs.tags }}
     steps:
