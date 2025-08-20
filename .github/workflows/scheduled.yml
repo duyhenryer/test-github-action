@@ -104,8 +104,6 @@ jobs:
     name: Watch Apps
     timeout-minutes: 10
     if: github.event_name == 'schedule'
-    container:
-      image: ${{ needs.build.outputs.image }}
     strategy:
       fail-fast: false
       matrix:
