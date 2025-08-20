@@ -48,13 +48,12 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
-  # ===== SHOPIFY PARTNER SYNC JOBS TEST =====
   sync-apps:
     needs: build
     runs-on: ubuntu-latest
     name: Sync Apps
     timeout-minutes: 15
-    if: github.event.schedule == '*/3 * * * *'
+    if: github.event_name == 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +85,7 @@ jobs:
           - name: Lavar
             token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
-            partner_id: ''
+            partner_id: '2663445'
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
@@ -103,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Watch Apps
     timeout-minutes: 10
-    if: github.event.schedule == '*/3 * * * *'
+    if: github.event_name == 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -154,7 +153,3 @@ jobs:
             ${{ matrix.app.token }} \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
-
-
-
-
