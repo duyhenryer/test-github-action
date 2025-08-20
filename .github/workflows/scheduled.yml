@@ -111,48 +111,49 @@ jobs:
       matrix:
         app:
           - name: Transtore
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'TRANSTORE_PARTNER_TOKEN'
             cron: '6 0 * * *'
           - name: Gelacy
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'GELACY_PARTNER_TOKEN'
             cron: '0 0 * * *'
           - name: Convercy
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'CONVERCY_PARTNER_TOKEN'
             cron: '6 0 * * *'
           - name: Trustz
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'TRUSTZ_PARTNER_TOKEN'
             cron: '0 0 * * *'
           - name: Amote
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'AMOTE_PARTNER_TOKEN'
             cron: '0 0 * * *'
           - name: Vairo
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'VAIRO_PARTNER_TOKEN'
             cron: '0 0 * * *'
           - name: Lavar
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             app_id: '14548697089'
             partner_id: '2663445'
+            secret_name: 'LAVAR_PARTNER_TOKEN'
             cron: '0 0 * * *'
-    # Điều kiện if được bỏ đi, các job trong ma trận sẽ chạy khi job cha chạy
     if: true
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Watch
+        env:
+          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
           /root/main \
-            ${{ matrix.app.token }} \
+            $APP_TOKEN \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
