@@ -1,8 +1,12 @@
-FROM golang:1.22 AS builder
+FROM golang:1.24.5 AS builder
 WORKDIR /app
 COPY . .
+# Build a static linux binary
 ENV CGO_ENABLED=0
-RUN go build -o main .
+ENV GOOS=linux
+ENV GOARCH=amd64
+RUN go build -ldflags="-s -w" -o main .
+
 FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /app/main .
