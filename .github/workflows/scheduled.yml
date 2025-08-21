@@ -3,10 +3,10 @@ run-name: Scheduled Job Full Test ${{ github.workflow }}
 
 on:
   schedule:
-    - cron: '*/3 * * * *'  # Test chạy mỗi 3 phút
-    - cron: '*/5 * * * *'  # Shopify Partner Sync - every 5 minutes (theo file bạn)
-    - cron: '*/8 * * * *'  # Gmail Watch - every 8 minutes (theo file bạn)
-    - cron: '6 0 * * *'    # Gmail Watch - daily at 06:00 UTC
+    # - cron: '*/3 * * * *'  # Test chạy mỗi 3 phút
+    # - cron: '*/5 * * * *'  # Shopify Partner Sync - every 5 minutes (theo file bạn)
+    # - cron: '*/8 * * * *'  # Gmail Watch - every 8 minutes (theo file bạn)
+    # - cron: '6 0 * * *'    # Gmail Watch - daily at 06:00 UTC
   workflow_dispatch: {}
 
 permissions:

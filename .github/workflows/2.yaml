@@ -2,7 +2,7 @@ name: Transtore Sync
 
 on:
   schedule:
-    - cron: "*/3 * * * *" # mỗi 3 phút
+    # - cron: "*/3 * * * *" # mỗi 3 phút
   workflow_dispatch:
 
 jobs:
