@@ -66,41 +66,39 @@ jobs:
           - name: Transtore
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'TRANSTORE_PARTNER_TOKEN'
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
           - name: Gelacy
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'GELACY_PARTNER_TOKEN'
+            token: ${{ secrets.GELACY_PARTNER_TOKEN }}
           - name: Convercy
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'CONVERCY_PARTNER_TOKEN'
+            token: ${{ secrets.CONVERCY_PARTNER_TOKEN }}
           - name: Trustz
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'TRUSTZ_PARTNER_TOKEN'
+            token: ${{ secrets.TRUSTZ_PARTNER_TOKEN }}
           - name: Amote
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'AMOTE_PARTNER_TOKEN'
+            token: ${{ secrets.AMOTE_PARTNER_TOKEN }}
           - name: Vairo
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'VAIRO_PARTNER_TOKEN'
+            token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
           - name: Lavar
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'LAVAR_PARTNER_TOKEN'
+            token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Sync
         if: github.event_name == '*/3 * * * *'
-        env:
-          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
           /root/main \
-            $APP_TOKEN \
+            ${{ matrix.app.token }} \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
   watch-apps:
@@ -115,47 +113,45 @@ jobs:
           - name: Transtore
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'TRANSTORE_PARTNER_TOKEN'
+            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
             cron: '6 0 * * *'
           - name: Gelacy
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'GELACY_PARTNER_TOKEN'
+            token: ${{ secrets.GELACY_PARTNER_TOKEN }}
             cron: '0 0 * * *'
           - name: Convercy
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'CONVERCY_PARTNER_TOKEN'
+            token: ${{ secrets.CONVERCY_PARTNER_TOKEN }}
             cron: '6 0 * * *'
           - name: Trustz
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'TRUSTZ_PARTNER_TOKEN'
+            token: ${{ secrets.TRUSTZ_PARTNER_TOKEN }}
             cron: '0 0 * * *'
           - name: Amote
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'AMOTE_PARTNER_TOKEN'
+            token: ${{ secrets.AMOTE_PARTNER_TOKEN }}
             cron: '0 0 * * *'
           - name: Vairo
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'VAIRO_PARTNER_TOKEN'
+            token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
             cron: '0 0 * * *'
           - name: Lavar
             app_id: '14548697089'
             partner_id: '2663445'
-            secret_name: 'LAVAR_PARTNER_TOKEN'
+            token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
             cron: '0 0 * * *'
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Watch
         if: github.event.schedule == matrix.app.cron
-        env:
-          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
           /root/main \
-            $APP_TOKEN \
+            ${{ matrix.app.token }} \
             gid://partners/App/${{ matrix.app.app_id }} \
             ${{ matrix.app.partner_id }}
