@@ -1,27 +1,28 @@
-name: Scheduled Jobs Test
-run-name: Scheduled Job Test ${{ github.workflow }}
+name: Scheduled Jobs Full Test
+run-name: Scheduled Job Full Test ${{ github.workflow }}
 
 on:
   schedule:
     # Test chạy mỗi 3 phút
     - cron: '*/3 * * * *'
-    - cron: '*/5 * * * *'
     # Shopify Partner Sync - every 6 hours
-    - cron: '0 */6 * * *'
+    - cron: '*/5 * * * *'
     # Gmail Watch - daily at 00:00 UTC
-    - cron: '0 0 * * *'
+    - cron: '*/5 * * * *'
     # Gmail Watch - daily at 06:00 UTC
     - cron: '6 0 * * *'
+  workflow_dispatch: # cho phép trigger thủ công
+
 permissions:
   contents: read
   packages: write
   secrets: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     name: Build Binary
     timeout-minutes: 10
-    # if: github.event.schedule == '*/3 * * * *'
     outputs:
       image: ${{ steps.meta.outputs.tags }}
     steps:
@@ -56,9 +57,9 @@ jobs:
   sync-apps:
     needs: build
     runs-on: ubuntu-latest
-    name: Sync Apps
+    name: Shopify Apps Sync
     timeout-minutes: 15
-    # if: github.event_name == '*/3 * * * *'
+    if: github.event_name == 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -66,46 +67,61 @@ jobs:
           - name: Transtore
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            secret_name: 'TRANSTORE_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
           - name: Gelacy
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.GELACY_PARTNER_TOKEN }}
+            secret_name: 'GELACY_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
           - name: Convercy
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.CONVERCY_PARTNER_TOKEN }}
+            secret_name: 'CONVERCY_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
           - name: Trustz
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.TRUSTZ_PARTNER_TOKEN }}
+            secret_name: 'TRUSTZ_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
           - name: Amote
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.AMOTE_PARTNER_TOKEN }}
+            secret_name: 'AMOTE_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
           - name: Vairo
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
+            secret_name: 'VAIRO_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
           - name: Lavar
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
+            secret_name: 'LAVAR_PARTNER_TOKEN'
+            cron: '*/3 * * * *'
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Sync
-        if: github.event_name == '*/3 * * * *'
+        env:
+          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
-          /root/main \
-            ${{ matrix.app.token }} \
-            gid://partners/App/${{ matrix.app.app_id }} \
-            ${{ matrix.app.partner_id }}
+          echo "Current schedule: ${{ github.event.schedule }}"
+          if [ "${{ github.event.schedule }}" == "${{ matrix.app.cron }}" ]; then
+            /root/main \
+              $APP_TOKEN \
+              gid://partners/App/${{ matrix.app.app_id }} \
+              ${{ matrix.app.partner_id }}
+          else
+            echo "Skipping ${{ matrix.app.name }}, not its scheduled time"
+          fi
+
   watch-apps:
     needs: build
     runs-on: ubuntu-latest
-    name: Watch Apps
+    name: Gmail Watch Apps
     timeout-minutes: 10
+    if: github.event_name == 'schedule'
     strategy:
       fail-fast: false
       matrix:
@@ -113,45 +129,51 @@ jobs:
           - name: Transtore
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+            secret_name: 'TRANSTORE_PARTNER_TOKEN'
             cron: '6 0 * * *'
           - name: Gelacy
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.GELACY_PARTNER_TOKEN }}
-            cron: '0 0 * * *'
+            secret_name: 'GELACY_PARTNER_TOKEN'
+            cron: '*/5 * * * *'
           - name: Convercy
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.CONVERCY_PARTNER_TOKEN }}
+            secret_name: 'CONVERCY_PARTNER_TOKEN'
             cron: '6 0 * * *'
           - name: Trustz
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.TRUSTZ_PARTNER_TOKEN }}
-            cron: '0 0 * * *'
+            secret_name: 'TRUSTZ_PARTNER_TOKEN'
+            cron: '*/5 * * * *'
           - name: Amote
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.AMOTE_PARTNER_TOKEN }}
-            cron: '0 0 * * *'
+            secret_name: 'AMOTE_PARTNER_TOKEN'
+            cron: '*/5 * * * *'
           - name: Vairo
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
-            cron: '0 0 * * *'
+            secret_name: 'VAIRO_PARTNER_TOKEN'
+            cron: '*/5 * * * *'
           - name: Lavar
             app_id: '14548697089'
             partner_id: '2663445'
-            token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
-            cron: '0 0 * * *'
+            secret_name: 'LAVAR_PARTNER_TOKEN'
+            cron: '*/5 * * * *'
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Watch
-        if: github.event.schedule == matrix.app.cron
+        env:
+          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
-          /root/main \
-            ${{ matrix.app.token }} \
-            gid://partners/App/${{ matrix.app.app_id }} \
-            ${{ matrix.app.partner_id }}
+          echo "Current schedule: ${{ github.event.schedule }}"
+          if [ "${{ github.event.schedule }}" == "${{ matrix.app.cron }}" ]; then
+            /root/main \
+              $APP_TOKEN \
+              gid://partners/App/${{ matrix.app.app_id }} \
+              ${{ matrix.app.partner_id }}
+          else
+            echo "Skipping ${{ matrix.app.name }}, not its scheduled time"
+          fi
