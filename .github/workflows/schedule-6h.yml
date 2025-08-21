@@ -39,7 +39,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.LAVAR_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   vairo:
@@ -49,7 +50,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main ${{ secrets.VAIRO_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   amote:
@@ -59,7 +61,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.AMOTE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   convercy:
@@ -69,7 +72,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.CONVERCY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   gelacy:
@@ -79,7 +83,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.GELACY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   transtore:
@@ -89,7 +94,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.TRANSTORE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   trustz:
@@ -99,5 +105,6 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Shopify Partner Sync - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.TRUSTZ_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111

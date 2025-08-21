@@ -42,7 +42,8 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Gmail updater watch inbox - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.TRUSTZ_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   amote:
@@ -53,5 +54,6 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - run: |
+      - name: Gmail updater watch inbox - (${{ github.event.schedule }})
+        run: |
           /root/main "${{ secrets.AMOTE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
