@@ -6,7 +6,6 @@ on:
     # Test chạy mỗi 3 phút
     - cron: '*/3 * * * *'
     - cron: '*/5 * * * *'
-    - cron: '*/10 * * * *'
     # Shopify Partner Sync - every 6 hours
     - cron: '0 */6 * * *'
     # Gmail Watch - daily at 00:00 UTC
@@ -22,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Binary
     timeout-minutes: 10
-    if: github.event.schedule == '*/3 * * * *'
+    # if: github.event.schedule == '*/3 * * * *'
     outputs:
       image: ${{ steps.meta.outputs.tags }}
     steps:
@@ -59,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Sync Apps
     timeout-minutes: 15
-    if: github.event_name == '*/3 * * * *'
+    # if: github.event_name == '*/3 * * * *'
     strategy:
       fail-fast: false
       matrix:
@@ -96,6 +95,7 @@ jobs:
       image: ${{ needs.build.outputs.image }}
     steps:
       - name: Run ${{ matrix.app.name }} Sync
+        if: github.event_name == '*/3 * * * *'
         env:
           APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
