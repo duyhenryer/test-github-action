@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Gmail updater watch inbox - (${{ github.event.schedule }})
         run: |
-          /root/main ${{ secrets.CONVERCY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+          /root/main "${{ secrets.CONVERCY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   transtore:
     runs-on: ubuntu-latest
