@@ -1,0 +1,100 @@
+name: Schedule 6h
+
+on:
+  schedule:
+    # - cron: "0 */6 * * *"
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/schedule-6h
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          platforms: linux/amd64
+
+  lavar:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main "${{ secrets.LAVAR_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+
+  vairo:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main ${{ secrets.VAIRO_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+
+  amote:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main "${{ secrets.AMOTE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+
+  convercy:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main "${{ secrets.CONVERCY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+
+  gelacy:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main "${{ secrets.GELACY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+
+  transtore:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main "${{ secrets.TRANSTORE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+
+  trustz:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 15
+    container:
+      image: ${{ needs.build.outputs.image }}
+    steps:
+      - run: |
+          /root/main "${{ secrets.TRUSTZ_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
