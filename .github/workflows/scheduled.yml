@@ -56,7 +56,7 @@ jobs:
   sync-apps:
     needs: build
     runs-on: ubuntu-latest
-    name: ${{ matrix.app.cron }}
+    name: Shopify - ${{ matrix.app.cron }}
     timeout-minutes: 15
     strategy:
       fail-fast: false
