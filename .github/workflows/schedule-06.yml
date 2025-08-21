@@ -18,11 +18,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - id: meta
+      - name: Docker meta
+        id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/schedule-06
-      - uses: docker/build-push-action@v6
+          images: |
+            name=ghcr.io/${{ github.repository }}/backend
+          tags: |
+            type=sha,enable=true,suffix=,format=short,prefix=
+      - name: Build and push
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
