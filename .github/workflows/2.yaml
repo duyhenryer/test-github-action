@@ -20,13 +20,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
+      - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}/shopify-partner
-
-      - name: Build and push
+          images: |
+            name=ghcr.io/${{ github.repository }}/backend
+          tags: |
+            type=sha,enable=true,suffix=,format=short
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -35,7 +37,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
-
   run:
     runs-on: ubuntu-latest
     needs: build
