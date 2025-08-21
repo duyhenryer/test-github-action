@@ -1,4 +1,4 @@
-name: Schedule 00
+name: Schedule - 0 0 * * *
 
 on:
   schedule:
@@ -30,6 +30,7 @@ jobs:
           platforms: linux/amd64
 
   trustz:
+    name: trustz
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 15
@@ -40,6 +41,7 @@ jobs:
           /root/main "${{ secrets.TRUSTZ_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   amote:
+    name: amote
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 15
