@@ -51,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 15
-    container:
-      image: ${{ needs.build.outputs.image }}
+    # container:
+    #   image: ${{ needs.build.outputs.image }}
     steps:
       - name: Gmail updater watch inbox - (${{ github.event.schedule }})
         run: |
