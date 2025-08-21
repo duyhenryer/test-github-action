@@ -1,0 +1,51 @@
+name: "Shopify Run"
+description: "Run Shopify app inside job container if schedule matches (or on manual run)."
+
+inputs:
+  cron:
+    description: "Cron string for this step (e.g. */3 * * * *)"
+    required: true
+  app_id:
+    description: "Shopify App ID"
+    required: true
+  partner_id:
+    description: "Shopify Partner ID"
+    required: true
+  app_token:
+    description: "Token value (pass the secret value here)"
+    required: true
+  cmd:
+    description: "Binary path inside the container"
+    required: false
+    default: "/root/main"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check schedule & run
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "event_name: '${{ github.event_name }}'"
+        echo "event.schedule: '${{ github.event.schedule }}'"
+        echo "step.cron: '${{ inputs.cron }}'"
+
+        should_run=false
+        if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          should_run=true
+          echo "Manual dispatch → run."
+        elif [[ "${{ github.event_name }}" == "schedule" && "${{ github.event.schedule }}" == "${{ inputs.cron }}" ]]; then
+          should_run=true
+          echo "Cron matches → run."
+        else
+          echo "Skip (cron mismatch)."
+        fi
+
+        if [[ "$should_run" == true ]]; then
+          echo "Executing: ${{ inputs.cmd }} <token> gid://partners/App/${{ inputs.app_id }} ${{ inputs.partner_id }}"
+          "${{ inputs.cmd }}" \
+            "${{ inputs.app_token }}" \
+            "gid://partners/App/${{ inputs.app_id }}" \
+            "${{ inputs.partner_id }}"
+        fi
+  

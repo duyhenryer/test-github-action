@@ -3,15 +3,11 @@ run-name: Scheduled Job Full Test ${{ github.workflow }}
 
 on:
   schedule:
-    # Test chạy mỗi 3 phút
-    - cron: '*/3 * * * *'
-    # Shopify Partner Sync - every 6 hours
-    - cron: '*/5 * * * *'
-    # Gmail Watch - daily at 00:00 UTC
-    - cron: '*/8 * * * *'
-    # Gmail Watch - daily at 06:00 UTC
-    - cron: '6 0 * * *'
-  workflow_dispatch: # cho phép trigger thủ công
+    - cron: '*/3 * * * *'  # Test chạy mỗi 3 phút
+    - cron: '*/5 * * * *'  # Shopify Partner Sync - every 5 minutes (theo file bạn)
+    - cron: '*/8 * * * *'  # Gmail Watch - every 8 minutes (theo file bạn)
+    - cron: '6 0 * * *'    # Gmail Watch - daily at 06:00 UTC
+  workflow_dispatch: {}
 
 permissions:
   contents: read
@@ -25,16 +21,19 @@ jobs:
     outputs:
       image: ${{ steps.meta.outputs.tags }}
     steps:
-      - uses: actions/checkout@v4
-        name: Checkout
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -43,6 +42,7 @@ jobs:
             name=ghcr.io/${{ github.repository }}/backend
           tags: |
             type=sha,enable=true,suffix=,format=short
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
@@ -56,122 +56,127 @@ jobs:
   sync-apps:
     needs: build
     runs-on: ubuntu-latest
-    name: Shopify - ${{ matrix.app.cron }}
+    name: Shopify Sync Steps
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - name: Transtore
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'TRANSTORE_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
-          - name: Gelacy
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'GELACY_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
-          - name: Convercy
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'CONVERCY_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
-          - name: Trustz
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'TRUSTZ_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
-          - name: Amote
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'AMOTE_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
-          - name: Vairo
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'VAIRO_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
-          - name: Lavar
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'LAVAR_PARTNER_TOKEN'
-            cron: '*/3 * * * *'
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - name: Run ${{ matrix.app.name }} - ${{ matrix.app.cron }} - Sync
-        env:
-          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
-        run: |
-          echo "Current schedule: ${{ github.event.schedule }}"
-          if [ "${{ github.event.schedule }}" == "${{ matrix.app.cron }}" ]; then
-            /root/main \
-              $APP_TOKEN \
-              gid://partners/App/${{ matrix.app.app_id }} \
-              ${{ matrix.app.partner_id }}
-          else
-            echo "Skipping ${{ matrix.app.name }}, not its scheduled time"
-          fi
+      - name: Transtore (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+
+      - name: Gelacy (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.GELACY_PARTNER_TOKEN }}
+
+      - name: Convercy (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.CONVERCY_PARTNER_TOKEN }}
+
+      - name: Trustz (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.TRUSTZ_PARTNER_TOKEN }}
+
+      - name: Amote (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.AMOTE_PARTNER_TOKEN }}
+
+      - name: Vairo (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
+
+      - name: Lavar (*/3)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/3 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
 
   watch-apps:
     needs: build
     runs-on: ubuntu-latest
-    name: Gmail Watch Apps
+    name: Gmail Watch Steps
     timeout-minutes: 10
-    # if: github.event_name == 'schedule'
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - name: Transtore
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'TRANSTORE_PARTNER_TOKEN'
-            cron: '6 0 * * *'
-          - name: Gelacy
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'GELACY_PARTNER_TOKEN'
-            cron: '*/5 * * * *'
-          - name: Convercy
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'CONVERCY_PARTNER_TOKEN'
-            cron: '6 0 * * *'
-          - name: Trustz
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'TRUSTZ_PARTNER_TOKEN'
-            cron: '*/5 * * * *'
-          - name: Amote
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'AMOTE_PARTNER_TOKEN'
-            cron: '*/5 * * * *'
-          - name: Vairo
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'VAIRO_PARTNER_TOKEN'
-            cron: '*/5 * * * *'
-          - name: Lavar
-            app_id: '14548697089'
-            partner_id: '2663445'
-            secret_name: 'LAVAR_PARTNER_TOKEN'
-            cron: '*/5 * * * *'
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - name: Run ${{ matrix.app.name }} - ${{ matrix.app.cron }} - Watch
-        env:
-          APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
-        run: |
-          echo "Current schedule: ${{ github.event.schedule }}"
-          if [ "${{ github.event.schedule }}" == "${{ matrix.app.cron }}" ]; then
-            /root/main \
-              $APP_TOKEN \
-              gid://partners/App/${{ matrix.app.app_id }} \
-              ${{ matrix.app.partner_id }}
-          else
-            echo "Skipping ${{ matrix.app.name }}, not its scheduled time"
-          fi
+      - name: Transtore (6 0)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '6 0 * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.TRANSTORE_PARTNER_TOKEN }}
+
+      - name: Gelacy (*/5)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/5 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.GELACY_PARTNER_TOKEN }}
+
+      - name: Convercy (6 0)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '6 0 * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.CONVERCY_PARTNER_TOKEN }}
+
+      - name: Trustz (*/5)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/5 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.TRUSTZ_PARTNER_TOKEN }}
+
+      - name: Amote (*/5)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/5 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.AMOTE_PARTNER_TOKEN }}
+
+      - name: Vairo (*/5)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/5 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.VAIRO_PARTNER_TOKEN }}
+
+      - name: Lavar (*/5)
+        uses: ./.github/actions/shopify-run
+        with:
+          cron: '*/5 * * * *'
+          app_id: '14548697089'
+          partner_id: '2663445'
+          app_token: ${{ secrets.LAVAR_PARTNER_TOKEN }}
