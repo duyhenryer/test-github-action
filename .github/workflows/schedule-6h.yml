@@ -52,7 +52,7 @@ jobs:
     steps:
       - name: Shopify Partner Sync - (${{ github.event.schedule }})
         run: |
-          /root/main ${{ secrets.VAIRO_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+          /root/main "${{ secrets.VAIRO_PARTNER_TOKEN }}" gid://partners/App/111111111111 1111111
 
   amote:
     runs-on: ubuntu-latest
