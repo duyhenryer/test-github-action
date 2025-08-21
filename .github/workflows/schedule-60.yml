@@ -34,10 +34,7 @@ jobs:
 
       - name: Run Gmail updater (Convercy)
         run: |
-          ${{ needs.build.outputs.binary-path }} \
-            "${{ secrets.CONVERCY_PARTNER_TOKEN }}" \
-            gid://partners/App/111111111111 \
-            111111111111
+          ${{ needs.build.outputs.binary-path }} "${{ secrets.CONVERCY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
 
   transtore:
     runs-on: ubuntu-latest
@@ -48,7 +45,4 @@ jobs:
 
       - name: Run Gmail updater (Transtore)
         run: |
-          ${{ needs.build.outputs.binary-path }} \
-            "${{ secrets.TRANSTORE_PARTNER_TOKEN }}" \
-            gid://partners/App/111111111111 \
-            111111111111
+          ${{ needs.build.outputs.binary-path }} "${{ secrets.TRANSTORE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
