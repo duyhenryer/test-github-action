@@ -100,7 +100,7 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - name: Run ${{ matrix.app.name }} Sync
+      - name: Run ${{ matrix.app.name }} - ${{ matrix.app.cron }} - Sync
         env:
           APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
@@ -162,7 +162,7 @@ jobs:
     container:
       image: ${{ needs.build.outputs.image }}
     steps:
-      - name: Run ${{ matrix.app.name }} Watch
+      - name: Run ${{ matrix.app.name }} - ${{ matrix.app.cron }} - Watch
         env:
           APP_TOKEN: ${{ secrets[matrix.app.secret_name] }}
         run: |
