@@ -10,48 +10,45 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.meta.outputs.tags }}
+      binary-path: ${{ steps.build.outputs.binary }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            name=ghcr.io/${{ github.repository }}/backend
-          tags: |
-            type=sha,enable=true,suffix=,format=short,prefix=
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          platforms: linux/amd64
+          go-version: '1.22'
+
+      - name: Build binary
+        id: build
+        run: |
+          go build -o main .
+          echo "binary=./main" >> $GITHUB_OUTPUT
 
   convercy:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 15
-    container:
-      image: ${{ needs.build.outputs.image }}
     steps:
-      - name: Gmail updater watch inbox - (${{ github.event.schedule }})
+      - uses: actions/checkout@v4
+
+      - name: Run Gmail updater (Convercy)
         run: |
-          /root/main "${{ secrets.CONVERCY_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+          ${{ needs.build.outputs.binary-path }} \
+            "${{ secrets.CONVERCY_PARTNER_TOKEN }}" \
+            gid://partners/App/111111111111 \
+            111111111111
 
   transtore:
     runs-on: ubuntu-latest
     needs: build
     timeout-minutes: 15
-    container:
-      image: ${{ needs.build.outputs.image }}
     steps:
-      - name: Gmail updater watch inbox - (${{ github.event.schedule }})
+      - uses: actions/checkout@v4
+
+      - name: Run Gmail updater (Transtore)
         run: |
-          /root/main "${{ secrets.TRANSTORE_PARTNER_TOKEN }}" gid://partners/App/111111111111 111111111111
+          ${{ needs.build.outputs.binary-path }} \
+            "${{ secrets.TRANSTORE_PARTNER_TOKEN }}" \
+            gid://partners/App/111111111111 \
+            111111111111
